@@ -9,12 +9,29 @@ async function sprintChallenge5() { // Note the async keyword so you can use `aw
   // ❗ Use the variables `mentors` and `learners` to store the data.
   // ❗ Use the await keyword when using axios.
 
-  let mentors = [] // fix this
-  let learners = [] // fix this
+  /**For fetching, just await the Axios request to Endpoint A, and then await the request to Endpoint B. (Optionally, you can use Promise.all to handle both requests. We do not need the data from request A in order to start request B, so the requests can happen concurrently instead of back-to-back.) */
+
+  const entry = document.querySelector(".cards");
+
+  let { data: mentors } = await axios.get("http://localhost:3003/api/mentors");
+  let { data: learners } = await axios.get("http://localhost:3003/api/learners"
+  );
+
 
   // 👆 ==================== TASK 1 END ====================== 👆
 
   // 👇 ==================== TASK 2 START ==================== 👇
+
+  const combinedData = learners.map((learner) => {
+    const mentorsForLearner = mentors.filter((mentor) =>
+      learner.mentors.includes(mentor.id)
+    );
+
+    const mentorsNames = mentorsForLearner.map(
+      (m) => `${m.firstName} ${m.lastName}`
+    );
+    return { ...learner, mentors: mentorsNames };
+  });
 
   // 🧠 Combine learners and mentors.
   // ❗ At this point the learner objects only have the mentors' IDs.
@@ -38,7 +55,10 @@ async function sprintChallenge5() { // Note the async keyword so you can use `aw
 
   // 👇 ==================== TASK 3 START ==================== 👇
 
-  for (let learner of learners) { // looping over each learner object
+  for (let learner of combinedData) {
+    console.log("hit here");
+    console.log(learner);
+
 
     // 🧠 Flesh out the elements that describe each learner
     // ❗ Give the elements below their (initial) classes, textContent and proper nesting.
@@ -53,14 +73,33 @@ async function sprintChallenge5() { // Note the async keyword so you can use `aw
     const mentorsHeading = document.createElement('h4')
     const mentorsList = document.createElement('ul')
 
+    card.classList.add("card");
+
+    heading.textContent = learner.fullName;
+    email.textContent = learner.email;
+    mentorsHeading.textContent = "Mentors";
+    mentorsHeading.classList.add("closed");
+
+    for (let mentor of learner.mentors) {
+      const liElement = document.createElement('li');
+      liElement.textContent = mentor;
+      mentorsList.appendChild(liElement);
+    }
+
+
     // 👆 ==================== TASK 3 END ====================== 👆
 
     // 👆 WORK ONLY ABOVE THIS LINE 👆
     // 👆 WORK ONLY ABOVE THIS LINE 👆
     // 👆 WORK ONLY ABOVE THIS LINE 👆
-    card.appendChild(mentorsList)
-    card.dataset.fullName = learner.fullName
-    cardsContainer.appendChild(card)
+
+    card.appendChild(heading);
+    card.appendChild(email);
+    card.appendChild(mentorsHeading);
+    card.appendChild(mentorsList);
+    card.dataset.fullName = learner.fullName;
+    cardsContainer.appendChild(card);
+
 
     card.addEventListener('click', evt => {
       const mentorsHeading = card.querySelector('h4')
