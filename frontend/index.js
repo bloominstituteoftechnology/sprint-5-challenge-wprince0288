@@ -11,7 +11,6 @@ async function sprintChallenge5() { // Note the async keyword so you can use `aw
 
   /**For fetching, just await the Axios request to Endpoint A, and then await the request to Endpoint B. (Optionally, you can use Promise.all to handle both requests. We do not need the data from request A in order to start request B, so the requests can happen concurrently instead of back-to-back.) */
 
-  const entry = document.querySelector(".cards");
 
   let { data: mentors } = await axios.get("http://localhost:3003/api/mentors");
   let { data: learners } = await axios.get("http://localhost:3003/api/learners"
